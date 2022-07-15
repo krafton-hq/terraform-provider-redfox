@@ -8,74 +8,54 @@ import (
 	"github.com/krafton-hq/red-fox/apis/idl_common"
 )
 
+func ApiObjectMetaFields() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"name": {
+			Description: "Resource Name, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/names/",
+			Type:        schema.TypeString,
+			Required:    true,
+			ForceNew:    true,
+		},
+		"namespace": {
+			Description: "Resource Namespace use only Namespaced Resource, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+			Type:        schema.TypeString,
+			Optional:    true,
+			ForceNew:    true,
+		},
+		"labels": {
+			Description: "Resource Annotations, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
+			Type:        schema.TypeMap,
+			Optional:    true,
+			Elem:        &schema.Schema{Type: schema.TypeString},
+		},
+		"annotations": {
+			Description: "Resource Annotations, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/",
+			Type:        schema.TypeMap,
+			Optional:    true,
+			Elem:        &schema.Schema{Type: schema.TypeString},
+		},
+	}
+}
+
 func ApiObjectMeta() *schema.Schema {
 	return &schema.Schema{
 		Description: "Api-Object Metadata Block",
-		Type:        schema.TypeSet,
+		Type:        schema.TypeList,
 		Required:    true,
 		MinItems:    1,
 		MaxItems:    1,
-		ConfigMode:  schema.SchemaConfigModeBlock,
 		Elem: &schema.Resource{
-			Schema: map[string]*schema.Schema{
-				"name": {
-					Description: "Resource Name, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/names/",
-					Type:        schema.TypeString,
-					Required:    true,
-					ForceNew:    true,
-				},
-				"namespace": {
-					Description: "Resource Namespace use only Namespaced Resource, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
-					Type:        schema.TypeString,
-					Optional:    true,
-					ForceNew:    true,
-				},
-				"labels": {
-					Description: "Resource Annotations, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
-					Type:        schema.TypeMap,
-					Optional:    true,
-					Elem:        &schema.Schema{Type: schema.TypeString},
-				},
-				"annotations": {
-					Description: "Resource Annotations, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/",
-					Type:        schema.TypeMap,
-					Optional:    true,
-					Elem:        &schema.Schema{Type: schema.TypeString},
-				},
-			},
+			Schema: ApiObjectMetaFields(),
 		},
 	}
 }
 
-func GroupVersionKind() *schema.Resource {
-	return &schema.Resource{
-		Schema: map[string]*schema.Schema{
-			"group": {
-				Description: "Object's Group Name, Like Kubernetes ApiGroup",
-				Type:        schema.TypeString,
-				Required:    true,
-			},
-			"version": {
-				Description: "Object's Version, Like Kubernetes Version",
-				Type:        schema.TypeString,
-				Required:    true,
-			},
-			"kind": {
-				Description: "Object's Kind Name, Like Kubernetes Kind",
-				Type:        schema.TypeString,
-				Required:    true,
-			},
-		},
-	}
-}
-
-func MarshalApiObjectMeta(set *schema.Set) (*idl_common.ObjectMeta, error) {
-	if set == nil {
-		return nil, fmt.Errorf("namespace Block Should not be null")
+func MarshalApiObjectMeta(raw []any) (*idl_common.ObjectMeta, error) {
+	if raw == nil {
+		return nil, fmt.Errorf("metadata Block Should not be null")
 	}
 
-	rawItem := set.List()[0]
-	buf, err := json.Marshal(rawItem)
+	buf, err := json.Marshal(raw[0])
 	if err != nil {
 		return nil, fmt.Errorf("unmarshal Terraform Object to Json Failed: %v", err.Error())
 	}
@@ -87,4 +67,45 @@ func MarshalApiObjectMeta(set *schema.Set) (*idl_common.ObjectMeta, error) {
 	}
 
 	return meta, nil
+}
+
+func UnmarshalApiObjectMeta(metadata *idl_common.ObjectMeta) ([]any, error) {
+	if metadata == nil {
+		return nil, fmt.Errorf("metadata Block Should not be null")
+	}
+
+	buf, err := json.Marshal(metadata)
+	if err != nil {
+		return nil, fmt.Errorf("unmarshal Go Struct to Json Failed: %v", err.Error())
+	}
+
+	raw := map[string]any{}
+	err = json.Unmarshal(buf, &raw)
+	if err != nil {
+		return nil, fmt.Errorf("marshal Json to Go Map Failed: %v", err.Error())
+	}
+
+	return []any{raw}, nil
+}
+
+func LabelSelector() *schema.Schema {
+	return &schema.Schema{
+		Description: "Resource Label Selectors, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
+		Type:        schema.TypeMap,
+		Optional:    true,
+		Elem:        &schema.Schema{Type: schema.TypeString},
+	}
+}
+
+func MarshalLabelSelectors(raw map[string]any) map[string]string {
+	if raw == nil {
+		return nil
+	}
+
+	selector := map[string]string{}
+	for key, value := range raw {
+		selector[key] = value.(string)
+	}
+
+	return selector
 }

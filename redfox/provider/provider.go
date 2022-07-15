@@ -7,7 +7,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	client_sdk "github.com/krafton-hq/red-fox/client-sdk"
 	"github.com/krafton-hq/terraform-provider-redfox/redfox/redfox_helper"
-	"github.com/krafton-hq/terraform-provider-redfox/redfox/resources"
 )
 
 func init() {
@@ -18,10 +17,11 @@ func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			DataSourcesMap: map[string]*schema.Resource{
-				//"scaffolding_data_source": dataSourceScaffolding(),
+				"redfox_namespaces": DataSourceNamespaces(),
+				"redfox_namespace":  DataSourceNamespace(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"redfox_namespace": resources.ResourceNamespace(),
+				"redfox_namespace": ResourceNamespace(),
 			},
 			Schema: map[string]*schema.Schema{
 				"address": {

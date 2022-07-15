@@ -1,7 +1,8 @@
-package resources
+package provider
 
 import (
 	"context"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -13,28 +14,31 @@ import (
 
 func ResourceNamespace() *schema.Resource {
 	return &schema.Resource{
-		Description: "Red-Fox Namespace Resource, Like https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+		Description: "RedFox Namespace Resource, Like https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
 
 		ReadContext:   resourceNamespaceRead,
 		DeleteContext: resourceNamespaceDelete,
 		CreateContext: resourceNamespaceCreateUpdate,
 		UpdateContext: resourceNamespaceCreateUpdate,
+		Timeouts: &schema.ResourceTimeout{
+			Default: schema.DefaultTimeout(1 * time.Minute),
+		},
 
 		Schema: map[string]*schema.Schema{
 			"metadata": api_object.ApiObjectMeta(),
-			"spec":     api_object.NamespaceSpec(),
+			"spec":     api_object.NamespaceResourceSpec(),
 		},
 	}
 }
 
 func resourceNamespaceCreateUpdate(ctx context.Context, d *schema.ResourceData, rawClient interface{}) diag.Diagnostics {
-	rawMetadata := d.Get("metadata").(*schema.Set)
+	rawMetadata := d.Get("metadata").([]any)
 	metadata, err := api_object.MarshalApiObjectMeta(rawMetadata)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	rawSpec := d.Get("spec").(*schema.Set)
+	rawSpec := d.Get("spec").([]any)
 	spec, err := api_object.MarshalNamespaceSpec(rawSpec)
 	if err != nil {
 		return diag.FromErr(err)
@@ -86,6 +90,23 @@ func resourceNamespaceRead(ctx context.Context, d *schema.ResourceData, rawClien
 	}
 	if res.CommonRes.Status != idl_common.ResultCode_SUCCESS {
 		return diag.Errorf("Create Namespace Failed, status: %v, message: %s", res.CommonRes.Status, res.CommonRes.Message)
+	}
+
+	rawMetadata, err := api_object.UnmarshalApiObjectMeta(res.Namespace.Metadata)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	rawSpec, err := api_object.UnmarshalNamespaceSpec(res.Namespace.Spec)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = d.Set("metadata", rawMetadata); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("spec", rawSpec); err != nil {
+		return diag.FromErr(err)
 	}
 	return nil
 }
