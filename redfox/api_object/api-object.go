@@ -3,6 +3,7 @@ package api_object
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/krafton-hq/red-fox/apis/idl_common"
@@ -23,7 +24,7 @@ func ApiObjectMetaFields() map[string]*schema.Schema {
 			ForceNew:    true,
 		},
 		"labels": {
-			Description: "Resource Annotations, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
+			Description: "Resource Labels, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
 			Type:        schema.TypeMap,
 			Optional:    true,
 			Elem:        &schema.Schema{Type: schema.TypeString},
@@ -108,4 +109,20 @@ func MarshalLabelSelectors(raw map[string]any) map[string]string {
 	}
 
 	return selector
+}
+
+func BuildNamespaceObjectId(namespace, name string) string {
+	return fmt.Sprintf("%s/%s", namespace, name)
+}
+
+func ParseNamespacedObjectId(id string) (namespace string, name string, found bool) {
+	return strings.Cut(id, "/")
+}
+
+func BuildClusterObjectId(name string) string {
+	return name
+}
+
+func ParseClusterObjectId(id string) (name string) {
+	return id
 }

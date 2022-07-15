@@ -22,6 +22,7 @@ func New(version string) func() *schema.Provider {
 			},
 			ResourcesMap: map[string]*schema.Resource{
 				"redfox_namespace": ResourceNamespace(),
+				"redfox_natip":     ResourceNatIp(),
 			},
 			Schema: map[string]*schema.Schema{
 				"address": {

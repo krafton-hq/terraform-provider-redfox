@@ -74,12 +74,12 @@ func resourceNamespaceCreateUpdate(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("Create Namespace Failed, status: %v, message: %s", res.Status, res.Message)
 	}
 
-	d.SetId(metadata.Name)
+	d.SetId(api_object.BuildClusterObjectId(metadata.Name))
 	return resourceNamespaceRead(ctx, d, rawClient)
 }
 
 func resourceNamespaceRead(ctx context.Context, d *schema.ResourceData, rawClient interface{}) diag.Diagnostics {
-	name := d.Id()
+	name := api_object.ParseClusterObjectId(d.Id())
 
 	client := rawClient.(redfox_helper.ClientHelper)
 	res, err := client.Namespaces().GetNamespace(ctx, &idl_common.SingleObjectReq{
@@ -112,7 +112,7 @@ func resourceNamespaceRead(ctx context.Context, d *schema.ResourceData, rawClien
 }
 
 func resourceNamespaceDelete(ctx context.Context, d *schema.ResourceData, rawClient interface{}) diag.Diagnostics {
-	name := d.Id()
+	name := api_object.ParseClusterObjectId(d.Id())
 
 	client := rawClient.(redfox_helper.ClientHelper)
 	res, err := client.Namespaces().DeleteNamespaces(ctx, &idl_common.SingleObjectReq{
@@ -122,7 +122,7 @@ func resourceNamespaceDelete(ctx context.Context, d *schema.ResourceData, rawCli
 		return diag.FromErr(err)
 	}
 	if res.Status != idl_common.ResultCode_SUCCESS {
-		return diag.Errorf("Create Namespace Failed, status: %v, message: %s", res.Status, res.Message)
+		return diag.Errorf("Delete Namespace Failed, status: %v, message: %s", res.Status, res.Message)
 	}
 	return nil
 }
