@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/krafton-hq/red-fox/apis/idl_common"
 )
 
@@ -116,20 +117,32 @@ func MarshalLabelSelectors(raw map[string]any) map[string]string {
 }
 
 func ApiVersion(computed bool) *schema.Schema {
+	var validFunc schema.SchemaValidateDiagFunc
+	if !computed {
+		validFunc = validation.ToDiagFunc(validation.StringIsNotEmpty)
+	}
+
 	return &schema.Schema{
-		Description: "RedFox ApiVersion, Same as ...",
-		Type:        schema.TypeString,
-		Required:    !computed,
-		Computed:    computed,
+		Description:      "RedFox ApiVersion, Same as ...",
+		Type:             schema.TypeString,
+		Required:         !computed,
+		Computed:         computed,
+		ValidateDiagFunc: validFunc,
 	}
 }
 
 func Kind(computed bool) *schema.Schema {
+	var validFunc schema.SchemaValidateDiagFunc
+	if !computed {
+		validFunc = validation.ToDiagFunc(validation.StringIsNotEmpty)
+	}
+
 	return &schema.Schema{
-		Description: "RedFox Kind, Same as ...",
-		Type:        schema.TypeString,
-		Required:    !computed,
-		Computed:    computed,
+		Description:      "RedFox Kind, Same as ...",
+		Type:             schema.TypeString,
+		Required:         !computed,
+		Computed:         computed,
+		ValidateDiagFunc: validFunc,
 	}
 }
 

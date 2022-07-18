@@ -213,11 +213,13 @@ func (r *GenericResource[Spec, Res]) ReadContextResource(ctx context.Context, d 
 		return diag.FromErr(err)
 	}
 
-	if err = d.Set("api_version", id.ApiVersion()); err != nil {
-		return diag.FromErr(err)
-	}
-	if err = d.Set("kind", id.Gvk.Kind); err != nil {
-		return diag.FromErr(err)
+	if r.GvkOption.UsePredefined {
+		if err = d.Set("api_version", id.ApiVersion()); err != nil {
+			return diag.FromErr(err)
+		}
+		if err = d.Set("kind", id.Gvk.Kind); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 	if err = d.Set("metadata", rawMetadata); err != nil {
 		return diag.FromErr(err)
@@ -337,7 +339,7 @@ func (r *GenericResource[Spec, Res]) DeleteContext(ctx context.Context, d *schem
 		return diag.FromErr(err)
 	}
 	if commonRes.Status != idl_common.ResultCode_SUCCESS {
-		return diag.Errorf("Get %s Failed, status: %v, message: %s", r.ResourceName, commonRes.Status, commonRes.Message)
+		return diag.Errorf("Delete %s Failed, status: %v, message: %s", r.ResourceName, commonRes.Status, commonRes.Message)
 	}
 	return nil
 }

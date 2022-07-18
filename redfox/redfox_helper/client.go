@@ -23,7 +23,6 @@ type ClientHelper interface {
 	NatIpGvk() *idl_common.GroupVersionKindSpec
 	EndpointGvk() *idl_common.GroupVersionKindSpec
 	CrdGvk() *idl_common.GroupVersionKindSpec
-	ApiResources() []*idl_common.ApiResourceSpec
 }
 
 type clientStruct struct {
@@ -63,6 +62,10 @@ func (c *clientStruct) Endpoints() documents.EndpointServerClient {
 	return c.redfoxClient.EndpointServerClient
 }
 
+func (c *clientStruct) CustomDocuments() documents.CustomDocumentServerClient {
+	return c.redfoxClient.CustomDocumentServerClient
+}
+
 func (c *clientStruct) Crds() crds.CustomResourceDefinitionServerClient {
 	return c.redfoxClient.CustomResourceDefinitionServerClient
 }
@@ -76,17 +79,13 @@ func (c *clientStruct) NamespaceGvk() *idl_common.GroupVersionKindSpec {
 }
 
 func (c *clientStruct) NatIpGvk() *idl_common.GroupVersionKindSpec {
-	return c.gvks["natip.red-fox.sbx-central.io"]
+	return c.gvks["natip.core"]
 }
 
 func (c *clientStruct) EndpointGvk() *idl_common.GroupVersionKindSpec {
-	return c.gvks["endpoint.red-fox.sbx-central.io"]
+	return c.gvks["endpoint.core"]
 }
 
 func (c *clientStruct) CrdGvk() *idl_common.GroupVersionKindSpec {
-	return c.gvks["customresourcedefinition.red-fox.sbx-central.io"]
-}
-
-func (c *clientStruct) ApiResources() []*idl_common.ApiResourceSpec {
-	return c.apiResources
+	return c.gvks["customresourcedefinition.core"]
 }

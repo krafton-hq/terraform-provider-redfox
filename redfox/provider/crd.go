@@ -29,7 +29,7 @@ func NewCrdOrigin() *template.GenericResource[*crds.CustomResourceDefinitionSpec
 		GvkOption: template.GvkOption{
 			UsePredefined: true,
 			GvkResolver: func(client redfox_helper.ClientHelper, raw *schema.ResourceData) (*idl_common.GroupVersionKindSpec, error) {
-				return client.NamespaceGvk(), nil
+				return client.CrdGvk(), nil
 			},
 		},
 

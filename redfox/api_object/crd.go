@@ -56,7 +56,7 @@ func UnmarshalCrdSpec(spec *crds.CustomResourceDefinitionSpec) ([]any, error) {
 	}
 
 	rawItem := map[string]any{
-		"gvks": rawGvks,
+		"gvk": rawGvks,
 	}
 
 	return []any{rawItem}, nil

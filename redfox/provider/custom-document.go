@@ -28,7 +28,7 @@ func NewCustomDocumentOrigin() *template.GenericResource[string, *documents.Cust
 		ResAssembler:    api_object.AssembleCustomDocument,
 		ResDisassembler: api_object.DisassembleCustomDocument,
 		GvkOption: template.GvkOption{
-			UsePredefined: true,
+			UsePredefined: false,
 			GvkResolver: func(client redfox_helper.ClientHelper, d *schema.ResourceData) (*idl_common.GroupVersionKindSpec, error) {
 				apiVersion := d.Get("api_version").(string)
 				kind := d.Get("kind").(string)
@@ -36,13 +36,22 @@ func NewCustomDocumentOrigin() *template.GenericResource[string, *documents.Cust
 				if err != nil {
 					return nil, err
 				}
-				for _, apiResource := range client.ApiResources() {
+
+				res, err := client.RawClient().ListApiResources(context.TODO(), &idl_common.CommonReq{})
+				if err != nil {
+					return nil, err
+				}
+				if res.CommonRes.Status != idl_common.ResultCode_SUCCESS {
+					return nil, fmt.Errorf("ListApiResourcesFailed, status: %v, message: %s", res.CommonRes.Status, res.CommonRes.Message)
+				}
+
+				for _, apiResource := range res.ApiResources {
 					if apiResource.Gvk.Group == gvk.Group && apiResource.Gvk.Kind == gvk.Kind && apiResource.Gvk.Version == gvk.Version {
 						return gvk, nil
 					}
 				}
 
-				return nil, fmt.Errorf("not Found Compatible Gvk %v", client.ApiResources())
+				return nil, fmt.Errorf("not Found Compatible Gvk %v", res.ApiResources)
 			},
 		},
 
@@ -50,6 +59,7 @@ func NewCustomDocumentOrigin() *template.GenericResource[string, *documents.Cust
 			res, err := client.CustomDocuments().GetCustomDocument(ctx, &idl_common.SingleObjectReq{
 				Name:      id.Name,
 				Namespace: &id.Namespace,
+				Gvk:       id.Gvk,
 			})
 			if res == nil {
 				return nil, nil, err
@@ -73,6 +83,7 @@ func NewCustomDocumentOrigin() *template.GenericResource[string, *documents.Cust
 			return client.CustomDocuments().DeleteCustomDocument(ctx, &idl_common.SingleObjectReq{
 				Name:      id.Name,
 				Namespace: &id.Namespace,
+				Gvk:       id.Gvk,
 			})
 		},
 	}

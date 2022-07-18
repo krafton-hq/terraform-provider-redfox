@@ -80,7 +80,7 @@ func UnmarshalGvks(gvks []*idl_common.GroupVersionKindSpec) (*schema.Set, error)
 func ParseGvk(apiVersion string, kind string) (*idl_common.GroupVersionKindSpec, error) {
 	group, version, found := strings.Cut(apiVersion, "/")
 	if !found {
-		return nil, fmt.Errorf("can't Parse ApiVersion to ApiGroup and Version, apiVErsion: '%s'", apiVersion)
+		return nil, fmt.Errorf("can't Parse ApiVersion to ApiGroup and Version, api_version: '%s'", apiVersion)
 	}
 
 	return &idl_common.GroupVersionKindSpec{
