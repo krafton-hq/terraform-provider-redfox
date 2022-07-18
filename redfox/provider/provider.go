@@ -14,15 +14,32 @@ func init() {
 }
 
 func New(version string) func() *schema.Provider {
+	natIpOrigin := NewNatIpOrigin()
+	namespaceOrigin := NewNamespaceOrigin()
+	crdOrigin := NewCrdOrigin()
+	endpointOrigin := NewEndpointOrigin()
+	customDocumentOrigin := NewCustomDocumentOrigin()
+
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			DataSourcesMap: map[string]*schema.Resource{
-				"redfox_namespaces": DataSourceNamespaces(),
-				"redfox_namespace":  DataSourceNamespace(),
+				"redfox_natip":           natIpOrigin.DataSource(),
+				"redfox_natips":          natIpOrigin.DataSources(),
+				"redfox_namespace":       namespaceOrigin.DataSource(),
+				"redfox_namespaces":      namespaceOrigin.DataSources(),
+				"redfox_crd":             crdOrigin.DataSource(),
+				"redfox_crds":            crdOrigin.DataSources(),
+				"redfox_endpoint":        endpointOrigin.DataSource(),
+				"redfox_endpoints":       endpointOrigin.DataSources(),
+				"redfox_customdocument":  customDocumentOrigin.DataSource(),
+				"redfox_customdocuments": customDocumentOrigin.DataSources(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				"redfox_namespace": ResourceNamespace(),
-				"redfox_natip":     ResourceNatIp(),
+				"redfox_natip":          natIpOrigin.Resource(),
+				"redfox_namespace":      namespaceOrigin.Resource(),
+				"redfox_crd":            crdOrigin.Resource(),
+				"redfox_endpoint":       endpointOrigin.Resource(),
+				"redfox_customdocument": customDocumentOrigin.Resource(),
 			},
 			Schema: map[string]*schema.Schema{
 				"address": {

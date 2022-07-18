@@ -3,6 +3,7 @@ package api_object
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/krafton-hq/red-fox/apis/idl_common"
@@ -74,4 +75,17 @@ func UnmarshalGvks(gvks []*idl_common.GroupVersionKindSpec) (*schema.Set, error)
 	}
 
 	return schema.NewSet(schema.HashResource(GroupVersionKind()), raws), nil
+}
+
+func ParseGvk(apiVersion string, kind string) (*idl_common.GroupVersionKindSpec, error) {
+	group, version, found := strings.Cut(apiVersion, "/")
+	if !found {
+		return nil, fmt.Errorf("can't Parse ApiVersion to ApiGroup and Version, apiVErsion: '%s'", apiVersion)
+	}
+
+	return &idl_common.GroupVersionKindSpec{
+		Group:   group,
+		Version: version,
+		Kind:    kind,
+	}, nil
 }

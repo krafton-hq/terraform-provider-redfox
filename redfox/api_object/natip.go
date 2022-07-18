@@ -1,11 +1,14 @@
 package api_object
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/krafton-hq/red-fox/apis/documents"
+	"github.com/krafton-hq/red-fox/apis/idl_common"
 	"github.com/samber/lo"
 )
 
@@ -25,19 +28,6 @@ func NatIpSpecFields() map[string]*schema.Schema {
 				Type:             schema.TypeString,
 				ValidateDiagFunc: validation.ToDiagFunc(validation.IsCIDR),
 			},
-		},
-	}
-}
-
-func NatIpResourceSpec() *schema.Schema {
-	return &schema.Schema{
-		Description: "NatIp Spec Block",
-		Type:        schema.TypeList,
-		Required:    true,
-		MinItems:    1,
-		MaxItems:    1,
-		Elem: &schema.Resource{
-			Schema: NatIpSpecFields(),
 		},
 	}
 }
@@ -80,4 +70,23 @@ func UnmarshalNatIpSpec(spec *documents.NatIpSpec) ([]any, error) {
 		"cidrs":   rawCidrs,
 	}
 	return []any{rawItem}, nil
+}
+
+func AssembleNatIp(gvk *idl_common.GroupVersionKindSpec, metadata *idl_common.ObjectMeta, spec *documents.NatIpSpec) *documents.NatIp {
+	return &documents.NatIp{
+		ApiVersion: gvk.Group + "/" + gvk.Version,
+		Kind:       gvk.Kind,
+		Metadata:   metadata,
+		Spec:       spec,
+	}
+}
+
+func DisassembleNatIp(natIp *documents.NatIp) (*idl_common.GroupVersionKindSpec, *idl_common.ObjectMeta, *documents.NatIpSpec) {
+	gvk, err := ParseGvk(natIp.ApiVersion, natIp.Kind)
+	// Unreachable
+	if err != nil {
+		tflog.Error(context.TODO(), err.Error())
+	}
+
+	return gvk, natIp.Metadata, natIp.Spec
 }

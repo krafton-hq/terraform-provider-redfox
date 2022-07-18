@@ -1,8 +1,10 @@
 package api_object
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/krafton-hq/red-fox/apis/idl_common"
 	"github.com/krafton-hq/red-fox/apis/namespaces"
@@ -21,35 +23,12 @@ func NamespaceSpecFields() map[string]*schema.Schema {
 	}
 }
 
-func NamespaceResourceSpec() *schema.Schema {
-	return &schema.Schema{
-		Description: "Namespace Spec Block",
-		Type:        schema.TypeList,
-		Required:    true,
-		MinItems:    1,
-		MaxItems:    1,
-		Elem: &schema.Resource{
-			Schema: NamespaceSpecFields(),
-		},
-	}
-}
-
-func NamespaceDataSourceSpec() *schema.Schema {
-	return &schema.Schema{
-		Description: "Namespace Spec Block",
-		Type:        schema.TypeList,
-		Computed:    true,
-		Elem: &schema.Resource{
-			Schema: NamespaceSpecFields(),
-		},
-	}
-}
-
 func MarshalNamespaceSpec(raw []any) (*namespaces.NamespaceSpec, error) {
 	if raw == nil {
 		return nil, fmt.Errorf("namespace Block Should not be null")
 	}
 
+	// Namespace Spec is Optional
 	if len(raw) != 1 {
 		return &namespaces.NamespaceSpec{}, nil
 	}
@@ -85,4 +64,23 @@ func UnmarshalNamespaceSpec(spec *namespaces.NamespaceSpec) ([]any, error) {
 	}
 
 	return []any{rawItem}, nil
+}
+
+func AssembleNamespace(gvk *idl_common.GroupVersionKindSpec, metadata *idl_common.ObjectMeta, spec *namespaces.NamespaceSpec) *namespaces.Namespace {
+	return &namespaces.Namespace{
+		ApiVersion: gvk.Group + "/" + gvk.Version,
+		Kind:       gvk.Kind,
+		Metadata:   metadata,
+		Spec:       spec,
+	}
+}
+
+func DisassembleNamespace(namespace *namespaces.Namespace) (*idl_common.GroupVersionKindSpec, *idl_common.ObjectMeta, *namespaces.NamespaceSpec) {
+	gvk, err := ParseGvk(namespace.ApiVersion, namespace.Kind)
+	// Unreachable
+	if err != nil {
+		tflog.Error(context.TODO(), err.Error())
+	}
+
+	return gvk, namespace.Metadata, namespace.Spec
 }

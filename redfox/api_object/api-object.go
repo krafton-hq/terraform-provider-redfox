@@ -9,18 +9,12 @@ import (
 	"github.com/krafton-hq/red-fox/apis/idl_common"
 )
 
-func ApiObjectMetaFields() map[string]*schema.Schema {
-	return map[string]*schema.Schema{
+func ApiObjectMetaFields(isNamespaced bool) map[string]*schema.Schema {
+	schemes := map[string]*schema.Schema{
 		"name": {
 			Description: "Resource Name, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/names/",
 			Type:        schema.TypeString,
 			Required:    true,
-			ForceNew:    true,
-		},
-		"namespace": {
-			Description: "Resource Namespace use only Namespaced Resource, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
-			Type:        schema.TypeString,
-			Optional:    true,
 			ForceNew:    true,
 		},
 		"labels": {
@@ -36,9 +30,19 @@ func ApiObjectMetaFields() map[string]*schema.Schema {
 			Elem:        &schema.Schema{Type: schema.TypeString},
 		},
 	}
+
+	if isNamespaced {
+		schemes["namespace"] = &schema.Schema{
+			Description: "Resource Namespace use only Namespaced Resource, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+			Type:        schema.TypeString,
+			Required:    isNamespaced,
+			ForceNew:    true,
+		}
+	}
+	return schemes
 }
 
-func ApiObjectMeta() *schema.Schema {
+func ApiObjectMeta(isNamespaced bool) *schema.Schema {
 	return &schema.Schema{
 		Description: "Api-Object Metadata Block",
 		Type:        schema.TypeList,
@@ -46,7 +50,7 @@ func ApiObjectMeta() *schema.Schema {
 		MinItems:    1,
 		MaxItems:    1,
 		Elem: &schema.Resource{
-			Schema: ApiObjectMetaFields(),
+			Schema: ApiObjectMetaFields(isNamespaced),
 		},
 	}
 }
@@ -111,18 +115,64 @@ func MarshalLabelSelectors(raw map[string]any) map[string]string {
 	return selector
 }
 
-func BuildNamespaceObjectId(namespace, name string) string {
-	return fmt.Sprintf("%s/%s", namespace, name)
+func ApiVersion(computed bool) *schema.Schema {
+	return &schema.Schema{
+		Description: "RedFox ApiVersion, Same as ...",
+		Type:        schema.TypeString,
+		Required:    !computed,
+		Computed:    computed,
+	}
 }
 
-func ParseNamespacedObjectId(id string) (namespace string, name string, found bool) {
-	return strings.Cut(id, "/")
+func Kind(computed bool) *schema.Schema {
+	return &schema.Schema{
+		Description: "RedFox Kind, Same as ...",
+		Type:        schema.TypeString,
+		Required:    !computed,
+		Computed:    computed,
+	}
 }
 
-func BuildClusterObjectId(name string) string {
-	return name
+type ResourceId struct {
+	Gvk       *idl_common.GroupVersionKindSpec
+	Namespace string
+	Name      string
 }
 
-func ParseClusterObjectId(id string) (name string) {
-	return id
+func NewResourceIdFull(gvk *idl_common.GroupVersionKindSpec, namespace string, name string) *ResourceId {
+	return &ResourceId{Gvk: gvk, Namespace: namespace, Name: name}
+}
+
+func NewResourceId(gvk *idl_common.GroupVersionKindSpec, name string) *ResourceId {
+	return &ResourceId{Gvk: gvk, Namespace: "@fox-system", Name: name}
+}
+
+func (i *ResourceId) String() string {
+	return fmt.Sprintf("%s:%s:%s/%s/%s", i.Gvk.Group, i.Gvk.Version, i.Gvk.Kind, i.Namespace, i.Name)
+}
+
+func (i *ResourceId) ApiVersion() string {
+	return fmt.Sprintf("%s/%s", i.Gvk.Group, i.Gvk.Version)
+}
+
+func ParseResourceId(id string) (*ResourceId, error) {
+	args := strings.Split(id, "/")
+	if len(args) != 3 {
+		return nil, fmt.Errorf("ParseResourceIdFailed: ResourceId should contains 3 slash '/' but it has %d slashs, id: '%s'", len(args), id)
+	}
+
+	rawGvks := strings.Split(args[0], ":")
+	if len(rawGvks) != 3 {
+		return nil, fmt.Errorf("ParseResourceIdFailed: Gvk should contains 3 colon ':' but it has %d colon, id: '%s'", len(rawGvks), args[0])
+	}
+
+	return &ResourceId{
+		Gvk: &idl_common.GroupVersionKindSpec{
+			Group:   rawGvks[0],
+			Version: rawGvks[1],
+			Kind:    rawGvks[2],
+		},
+		Namespace: args[1],
+		Name:      args[2],
+	}, nil
 }

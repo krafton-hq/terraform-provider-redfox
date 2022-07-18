@@ -15,6 +15,7 @@ type ClientHelper interface {
 	Namespaces() namespaces.NamespaceServerClient
 	NatIps() documents.NatIpServerClient
 	Endpoints() documents.EndpointServerClient
+	CustomDocuments() documents.CustomDocumentServerClient
 	Crds() crds.CustomResourceDefinitionServerClient
 
 	RawClient() *client_sdk.RedFoxClient
