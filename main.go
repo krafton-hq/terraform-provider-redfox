@@ -8,6 +8,7 @@ import (
 )
 
 var version = "dev-build"
+var commit = "devcommit"
 
 func main() {
 	var debugMode bool
