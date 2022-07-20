@@ -2,11 +2,13 @@ package provider
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	client_sdk "github.com/krafton-hq/red-fox/client-sdk"
 	"github.com/krafton-hq/terraform-provider-redfox/redfox/redfox_helper"
+	"google.golang.org/grpc"
 )
 
 func init() {
@@ -69,6 +71,9 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData, terraformVer
 	useTls := d.Get("use_tls").(bool)
 
 	config := client_sdk.DefaultConfig()
+	config.DialOptions = []grpc.DialOption{
+		grpc.WithUserAgent(fmt.Sprintf("Terraform/%s RedFoxProvider/%s", terraformVersion, providerVersion)),
+	}
 	config.WithTls = useTls
 	config.GrpcEndpoint = address
 	client, err := client_sdk.NewClient(config)

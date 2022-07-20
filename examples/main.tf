@@ -2,7 +2,7 @@ terraform {
   required_providers {
     redfox = {
       source  = "krafton-hq/redfox"
-      version = "0.0.1"
+      version = "0.0.2"
     }
   }
 }
@@ -60,10 +60,28 @@ resource "redfox_natip" "testtt" {
   metadata {
     name = "nat1"
     namespace = redfox_namespace.test.metadata[0].name
+    labels = {
+      "key" = "discover"
+      "key2" = "non-discover/sss"
+    }
   }
   spec {
     ip_type = "Ipv4"
     cidrs = ["1.1.1.1/32"]
+  }
+}
+
+resource "redfox_natip" "test222" {
+  metadata {
+    name = "nat2"
+    namespace = redfox_namespace.test.metadata[0].name
+    labels = {
+      "key" = "discover222"
+    }
+  }
+  spec {
+    ip_type = "Ipv4"
+    cidrs = ["2.3.2.3/32", "182.168.0.0/24"]
   }
 }
 
