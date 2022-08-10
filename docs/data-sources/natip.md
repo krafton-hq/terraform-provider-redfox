@@ -3,17 +3,16 @@
 page_title: "redfox_natip Data Source - terraform-provider-redfox"
 subcategory: ""
 description: |-
-  RedFox NatIp
+  
 ---
 
 # redfox_natip (Data Source)
 
-RedFox NatIp
 ```terraform
 data "redfox_natip" "natip" {
   metadata {
-    name      = "seoul-office"
-    namespace = "offices"
+    name      = "my-first-nat"
+    namespace = "redfox-metadata"
   }
 }
 ```
@@ -24,39 +23,28 @@ data "redfox_natip" "natip" {
 
 ### Required
 
-- `metadata` (Block List, Min: 1, Max: 1) Api-Object Metadata Block (see [below for nested schema](#nestedblock--metadata))
-
-### Optional
-
-- `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
+- `metadata` (Block List, Min: 1, Max: 1) Standard natip's metadata. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#metadata (see [below for nested schema](#nestedblock--metadata))
 
 ### Read-Only
 
-- `api_version` (String) RedFox ApiVersion, Same as ...
 - `id` (String) The ID of this resource.
-- `kind` (String) RedFox Kind, Same as ...
-- `spec` (List of Object) NatIp Spec Block (see [below for nested schema](#nestedatt--spec))
+- `spec` (List of Object) Spec defines the specification of the desired behavior of the deployment. More info: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.9/#deployment-v1-apps (see [below for nested schema](#nestedatt--spec))
 
 <a id="nestedblock--metadata"></a>
 ### Nested Schema for `metadata`
 
-Required:
-
-- `name` (String) Resource Name, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/names/
-- `namespace` (String) Resource Namespace use only Namespaced Resource, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
-
 Optional:
 
-- `annotations` (Map of String) Resource Annotations, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
-- `labels` (Map of String) Resource Labels, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+- `annotations` (Map of String) An unstructured key value map stored with the natip that may be used to store arbitrary metadata. More info: http://kubernetes.io/docs/user-guide/annotations
+- `labels` (Map of String) Map of string keys and values that can be used to organize and categorize (scope and select) the natip. May match selectors of replication controllers and services. More info: http://kubernetes.io/docs/user-guide/labels
+- `name` (String) Name of the natip, must be unique. Cannot be updated. More info: http://kubernetes.io/docs/user-guide/identifiers#names
+- `namespace` (String) Namespace defines the space within which name of the natip must be unique.
 
+Read-Only:
 
-<a id="nestedblock--timeouts"></a>
-### Nested Schema for `timeouts`
-
-Optional:
-
-- `default` (String)
+- `generation` (Number) A sequence number representing a specific generation of the desired state.
+- `resource_version` (String) An opaque value that represents the internal version of this natip that can be used by clients to determine when natip has changed. Read more: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency
+- `uid` (String) The unique in time and space value for this natip. More info: http://kubernetes.io/docs/user-guide/identifiers#uids
 
 
 <a id="nestedatt--spec"></a>

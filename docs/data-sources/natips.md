@@ -3,34 +3,39 @@
 page_title: "redfox_natips Data Source - terraform-provider-redfox"
 subcategory: ""
 description: |-
-  List NatIp
+  
 ---
 
 # redfox_natips (Data Source)
 
-List NatIp
 ```terraform
 data "redfox_natips" "all" {
 }
 
-data "redfox_natips" "key-equals" {
-  label_selectors = {
-    "my-label"  = ""
-    "my-label2" = ""
+data "redfox_natips" "in_namespace" {
+  namespace = "redfox-metadata"
+}
+
+data "redfox_natips" "label" {
+  selector {
+    match_labels = {
+      foo = "bar"
+    }
   }
 }
 
-data "redfox_natips" "key-value-equals" {
-  label_selectors = {
-    "my-label" = "bar-value"
+data "redfox_natips" "aggregate" {
+  namespace = "redfox-metadata"
+  selector {
+    match_labels = {
+      foo = "bar"
+    }
   }
 }
 
-data "redfox_natips" "labels-and-namespace" {
-  label_selectors = {
-    "my-label" = "bar-value"
-  }
-  namespace = "offices"
+
+output "nats" {
+  value = data.redfox_natips.all.items
 }
 ```
 
@@ -40,48 +45,57 @@ data "redfox_natips" "labels-and-namespace" {
 
 ### Optional
 
-- `label_selectors` (Map of String) Resource Label Selectors, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
-- `namespace` (String) Resource Namespace use only Namespaced Resource, Same as https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
-- `timeouts` (Block, Optional) (see [below for nested schema](#nestedblock--timeouts))
+- `namespace` (String) Namespace defines the space within which name of the natip must be unique.
+- `selector` (Block List, Max: 1) A list of selectors which will be used to find ClusterRoles and create the rules. (see [below for nested schema](#nestedblock--selector))
 
 ### Read-Only
 
-- `api_version` (String) RedFox ApiVersion, Same as ...
 - `id` (String) The ID of this resource.
-- `kind` (String) RedFox Kind, Same as ...
-- `natips` (List of Object) RedFox NatIp (see [below for nested schema](#nestedatt--natips))
+- `items` (List of Object) List of NatIps (see [below for nested schema](#nestedatt--items))
 
-<a id="nestedblock--timeouts"></a>
-### Nested Schema for `timeouts`
+<a id="nestedblock--selector"></a>
+### Nested Schema for `selector`
 
 Optional:
 
-- `default` (String)
+- `match_expressions` (Block List) A list of label selector requirements. The requirements are ANDed. (see [below for nested schema](#nestedblock--selector--match_expressions))
+- `match_labels` (Map of String) A map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of `match_expressions`, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
+
+<a id="nestedblock--selector--match_expressions"></a>
+### Nested Schema for `selector.match_expressions`
+
+Optional:
+
+- `key` (String) The label key that the selector applies to.
+- `operator` (String) A key's relationship to a set of values. Valid operators ard `In`, `NotIn`, `Exists` and `DoesNotExist`.
+- `values` (Set of String) An array of string values. If the operator is `In` or `NotIn`, the values array must be non-empty. If the operator is `Exists` or `DoesNotExist`, the values array must be empty. This array is replaced during a strategic merge patch.
 
 
-<a id="nestedatt--natips"></a>
-### Nested Schema for `natips`
+
+<a id="nestedatt--items"></a>
+### Nested Schema for `items`
 
 Read-Only:
 
-- `api_version` (String)
-- `kind` (String)
-- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--natips--metadata))
-- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--natips--spec))
+- `metadata` (List of Object) (see [below for nested schema](#nestedobjatt--items--metadata))
+- `spec` (List of Object) (see [below for nested schema](#nestedobjatt--items--spec))
 
-<a id="nestedobjatt--natips--metadata"></a>
-### Nested Schema for `natips.metadata`
+<a id="nestedobjatt--items--metadata"></a>
+### Nested Schema for `items.metadata`
 
 Read-Only:
 
 - `annotations` (Map of String)
+- `generation` (Number)
 - `labels` (Map of String)
 - `name` (String)
 - `namespace` (String)
+- `resource_version` (String)
+- `uid` (String)
 
 
-<a id="nestedobjatt--natips--spec"></a>
-### Nested Schema for `natips.spec`
+<a id="nestedobjatt--items--spec"></a>
+### Nested Schema for `items.spec`
 
 Read-Only:
 

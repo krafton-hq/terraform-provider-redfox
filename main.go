@@ -4,7 +4,7 @@ import (
 	"flag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
-	"github.com/krafton-hq/terraform-provider-redfox/redfox/provider"
+	"github.com/krafton-hq/terraform-provider-redfox/redfox"
 )
 
 var version = "dev-build"
@@ -22,7 +22,7 @@ func main() {
 
 		ProviderAddr: "registry.terraform.io/krafton-hq/redfox",
 
-		ProviderFunc: provider.New(version),
+		ProviderFunc: redfox.Provider,
 	}
 
 	plugin.Serve(opts)
