@@ -6,7 +6,7 @@ require (
 	github.com/hashicorp/go-cty v1.4.1-0.20200414143053-d3edf31b6320
 	github.com/hashicorp/terraform-plugin-log v0.4.1
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.18.0
-	github.com/krafton-hq/red-fox v0.3.3-0.20220810035925-b0f3f76e9184
+	github.com/krafton-hq/red-fox v0.3.3-0.20220811074748-2188d3223b13
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/samber/lo v1.25.0
 	k8s.io/api v0.23.9

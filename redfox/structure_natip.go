@@ -15,10 +15,12 @@ func expandNatIpSpec(natip []any) (*redfoxV1alpha1.NatIpSpec, error) {
 
 	in := natip[0].(map[string]any)
 
+	// Optional field
 	if rawIpType, found := in["ip_type"].(string); found {
 		obj.IpType = redfoxV1alpha1.IpType(rawIpType)
 	}
 
+	// Required field
 	cidrs := lo.Map[any, string](in["cidrs"].([]any), func(x any, _ int) string {
 		return x.(string)
 	})

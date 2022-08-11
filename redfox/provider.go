@@ -204,12 +204,16 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"redfox_natip":  dataSourceRedfoxNatIp(),
-			"redfox_natips": dataSourceRedfoxNatIps(),
+			"redfox_natip":    dataSourceRedfoxNatIp(),
+			"redfox_natips":   dataSourceRedfoxNatIps(),
+			"redfox_cluster":  dataSourceRedfoxCluster(),
+			"redfox_clusters": dataSourceRedfoxClusters(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"redfox_natip": resourceRedfoxNatIp(),
+			"redfox_natip":          resourceRedfoxNatIp(),
+			"redfox_cluster":        resourceRedfoxCluster(),
+			"redfox_cluster_status": resourceRedfoxClusterStatus(),
 		},
 	}
 

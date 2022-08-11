@@ -28,7 +28,7 @@ func resourceRedfoxNatIp() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Timeouts: &schema.ResourceTimeout{
-			Default: schema.DefaultTimeout(1 * time.Minute),
+			Default: schema.DefaultTimeout(30 * time.Second),
 		},
 		Schema: map[string]*schema.Schema{
 			"metadata": namespacedMetadataSchema("natip", true),
@@ -76,6 +76,9 @@ func resourceRedfoxNatIpApply(ctx context.Context, d *schema.ResourceData, meta 
 
 	metadata := expandMetadata(d.Get("metadata").([]interface{}))
 	spec, err := expandNatIpSpec(d.Get("spec").([]interface{}))
+	if err != nil {
+		return diag.FromErr(err)
+	}
 
 	natIp := &redfoxV1alpha1.NatIp{
 		TypeMeta:   natipTypeMeta,
