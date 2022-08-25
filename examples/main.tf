@@ -53,6 +53,7 @@ resource "redfox_cluster" "aa" {
     infra_vendor     = "AWS"
     service_phase    = "dev"
     service_tag      = "meta"
+    roles = ["central", "ingame"]
   }
 }
 
