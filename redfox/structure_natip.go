@@ -2,7 +2,7 @@ package redfox
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	redfoxV1alpha1 "github.com/krafton-hq/red-fox/pkg/apis/redfox/v1alpha1"
+	redfoxV1alpha1 "github.com/krafton-hq/redfox/pkg/apis/redfox/v1alpha1"
 	"github.com/samber/lo"
 )
 

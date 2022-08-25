@@ -11,13 +11,12 @@ import (
 	"strconv"
 
 	"github.com/hashicorp/go-cty/cty"
-	redfoxClient "github.com/krafton-hq/red-fox/pkg/generated/clientset/versioned"
-	"github.com/mitchellh/go-homedir"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	redfoxClient "github.com/krafton-hq/redfox/pkg/generated/clientset/versioned"
+	"github.com/mitchellh/go-homedir"
 
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/dynamic"
