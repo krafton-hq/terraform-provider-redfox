@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	redfoxV1alpha1 "github.com/krafton-hq/redfox/pkg/apis/redfox/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -68,6 +69,15 @@ func dataSourceRedfoxCluster() *schema.Resource {
 							Type:             schema.TypeString,
 							Required:         true,
 							ValidateDiagFunc: validation.ToDiagFunc(validation.StringIsNotEmpty),
+						},
+						"roles": {
+							Description: "",
+							Type:        schema.TypeList,
+							Required:    true,
+							Elem: &schema.Schema{
+								Type:             schema.TypeString,
+								ValidateDiagFunc: validation.ToDiagFunc(validation.StringInSlice([]string{string(redfoxV1alpha1.ClusterRoleIngame), string(redfoxV1alpha1.ClusterRoleOutgame), string(redfoxV1alpha1.ClusterRoleCentral)}, false)),
+							},
 						},
 					},
 				},

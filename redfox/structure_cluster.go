@@ -25,6 +25,11 @@ func expandClusterSpec(cluster []any) (*redfoxV1alpha1.ClusterSpec, error) {
 	obj.InfraVendor = in["infra_vendor"].(string)
 	obj.ServicePhase = in["service_phase"].(string)
 	obj.ServiceTag = in["service_tag"].(string)
+
+	rawRoles := in["roles"].([]any)
+	for _, role := range rawRoles {
+		obj.Roles = append(obj.Roles, redfoxV1alpha1.ClusterRole(role.(string)))
+	}
 	return obj, nil
 }
 
@@ -38,6 +43,7 @@ func flattenClusterSpec(in redfoxV1alpha1.ClusterSpec, d *schema.ResourceData, m
 	att["infra_vendor"] = in.InfraVendor
 	att["service_phase"] = in.ServicePhase
 	att["service_tag"] = in.ServiceTag
+	att["roles"] = in.Roles
 	return []any{att}, nil
 }
 
