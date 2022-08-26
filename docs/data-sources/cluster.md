@@ -60,6 +60,7 @@ Read-Only:
 - `cluster_region` (String)
 - `infra_account_id` (String)
 - `infra_vendor` (String)
+- `roles` (List of String)
 - `service_phase` (String)
 - `service_tag` (String)
 

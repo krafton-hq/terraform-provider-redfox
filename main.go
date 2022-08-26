@@ -5,6 +5,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
 	"github.com/krafton-hq/terraform-provider-redfox/redfox"
+
+	_ "github.com/hashicorp/terraform-plugin-docs/schemamd"
 )
 
 var version = "dev-build"
