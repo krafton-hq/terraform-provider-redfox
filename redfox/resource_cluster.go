@@ -97,6 +97,21 @@ func resourceRedfoxCluster() *schema.Resource {
 								ValidateDiagFunc: validation.ToDiagFunc(validation.StringInSlice([]string{string(redfoxV1alpha1.ClusterRoleIngame), string(redfoxV1alpha1.ClusterRoleOutgame), string(redfoxV1alpha1.ClusterRoleCentral)}, false)),
 							},
 						},
+						"vpc_id": {
+							Description:      "",
+							Type:             schema.TypeString,
+							Required:         false,
+							ValidateDiagFunc: validation.ToDiagFunc(validation.StringIsNotEmpty),
+						},
+						"database_subnet_ids": {
+							Description: "",
+							Type:        schema.TypeList,
+							Required:    false,
+							Elem: &schema.Schema{
+								Type:             schema.TypeString,
+								ValidateDiagFunc: validation.ToDiagFunc(validation.StringIsNotEmpty),
+							},
+						},
 					},
 				},
 			},
