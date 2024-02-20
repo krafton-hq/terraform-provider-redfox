@@ -3,7 +3,7 @@
 page_title: "redfox_clusters Data Source - terraform-provider-redfox"
 subcategory: ""
 description: |-
-  
+
 ---
 
 # redfox_clusters (Data Source)
@@ -90,6 +90,8 @@ Read-Only:
 - `roles` (List of String)
 - `service_phase` (String)
 - `service_tag` (String)
+- `vpc_id` (String)
+- `database_subnet_ids` (List of String)
 
 
 <a id="nestedobjatt--items--status"></a>
@@ -108,5 +110,3 @@ Read-Only:
 
 - `ca_cert` (String)
 - `endpoint` (String)
-
-

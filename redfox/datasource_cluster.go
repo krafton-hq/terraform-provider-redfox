@@ -82,13 +82,13 @@ func dataSourceRedfoxCluster() *schema.Resource {
 						"vpc_id": {
 							Description:      "",
 							Type:             schema.TypeString,
-							Required:         false,
+							Required:         true,
 							ValidateDiagFunc: validation.ToDiagFunc(validation.StringIsNotEmpty),
 						},
 						"database_subnet_ids": {
 							Description: "",
 							Type:        schema.TypeList,
-							Required:    false,
+							Optional:    true,
 							Elem: &schema.Schema{
 								Type:             schema.TypeString,
 								ValidateDiagFunc: validation.ToDiagFunc(validation.StringIsNotEmpty),
