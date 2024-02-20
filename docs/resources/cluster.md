@@ -3,7 +3,7 @@
 page_title: "redfox_cluster Resource - terraform-provider-redfox"
 subcategory: ""
 description: |-
-  
+
 ---
 
 # redfox_cluster (Resource)
@@ -18,14 +18,17 @@ resource "redfox_cluster" "cluster" {
     }
   }
   spec {
-    cluster_name     = "dev-meta-aws"
-    cluster_group    = "dev-meta"
-    cluster_engine   = "EKS"
-    cluster_region   = "ap-northeast-2"
-    infra_account_id = "1234567890"
-    infra_vendor     = "AWS"
-    service_phase    = "dev"
-    service_tag      = "meta"
+    cluster_name        = "dev-meta-aws"
+    cluster_group       = "dev-meta"
+    cluster_engine      = "EKS"
+    cluster_region      = "ap-northeast-2"
+    infra_account_id    = "1234567890"
+    infra_vendor        = "AWS"
+    service_phase       = "dev"
+    service_tag         = "meta"
+    roles               = ["ingame", "outgame"]
+    vpc_id              = "vpc-0abcdef1234567890"
+    database_subnet_ids = ["subnet-abcdef1234567891", "subnet-abcdef1234567890"]
   }
 }
 ```
@@ -80,7 +83,12 @@ Required:
 - `roles` (List of String)
 - `service_phase` (String)
 - `service_tag` (String)
+- `vpc_id` (String)
+- `roles` (List of String)
 
+Optional:
+
+- `database_subnet_ids` (List of String)
 
 <a id="nestedblock--timeouts"></a>
 ### Nested Schema for `timeouts`
@@ -88,5 +96,3 @@ Required:
 Optional:
 
 - `default` (String)
-
-

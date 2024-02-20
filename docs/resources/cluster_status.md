@@ -3,7 +3,7 @@
 page_title: "redfox_cluster_status Resource - terraform-provider-redfox"
 subcategory: ""
 description: |-
-  
+
 ---
 
 # redfox_cluster_status (Resource)
@@ -26,6 +26,9 @@ resource "redfox_cluster" "cluster" {
     infra_vendor     = "AWS"
     service_phase    = "dev"
     service_tag      = "meta"
+    roles               = ["ingame", "outgame"]
+    vpc_id              = "vpc-0abcdef1234567890"
+    database_subnet_ids = ["subnet-abcdef1234567891", "subnet-abcdef1234567890"]
   }
 }
 
@@ -113,5 +116,3 @@ Required:
 Optional:
 
 - `default` (String)
-
-
