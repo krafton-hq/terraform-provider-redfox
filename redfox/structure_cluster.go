@@ -32,7 +32,13 @@ func expandClusterSpec(cluster []any) (*redfoxV1alpha1.ClusterSpec, error) {
 	}
 
 	obj.VpcId = in["vpc_id"].(string)
-	obj.DatabaseSubnetIds = in["database_subnet_ids"].([]string)
+
+	if value, ok := in["database_subnet_ids"]; ok {
+		databaseSubnetIds := lo.Map[any, string](value.([]any), func(x any, _ int) string {
+			return x.(string)
+		})
+		obj.DatabaseSubnetIds = databaseSubnetIds
+	}
 
 	return obj, nil
 }
@@ -49,7 +55,9 @@ func flattenClusterSpec(in redfoxV1alpha1.ClusterSpec, d *schema.ResourceData, m
 	att["service_tag"] = in.ServiceTag
 	att["roles"] = in.Roles
 	att["vpc_id"] = in.VpcId
-	att["database_subnet_ids"] = in.DatabaseSubnetIds
+	if in.DatabaseSubnetIds != nil {
+		att["database_subnet_ids"] = in.DatabaseSubnetIds
+	}
 	return []any{att}, nil
 }
 
